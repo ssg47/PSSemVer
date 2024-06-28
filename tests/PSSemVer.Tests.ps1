@@ -52,6 +52,24 @@ Describe 'PSSemVer' {
             $PSSemVer.Prerelease | Should -BeNullOrEmpty
             $PSSemVer.BuildMetadata | Should -BeNullOrEmpty
         }
+        It "New-PSSemVer -Version 1.2.3 -PreRelease 'alpha'" {
+            $PSSemVer = New-PSSemVer -Version 1.2.3 -PreRelease 'alpha'
+            $PSSemVer.Major | Should -Be 1
+            $PSSemVer.Minor | Should -Be 2
+            $PSSemVer.Patch | Should -Be 3
+            $PSSemVer.Prerelease | Should -Be 'alpha'
+        }
+        It "New-PSSemVer -Version 1.2.3 -PreRelease 'alpha' -Build '2020-01-01'" {
+            $PSSemVer = New-PSSemVer -Version 1.2.3 -PreRelease 'alpha' -Build '2020-01-01'
+            $PSSemVer.Major | Should -Be 1
+            $PSSemVer.Minor | Should -Be 2
+            $PSSemVer.Patch | Should -Be 3
+            $PSSemVer.Prerelease | Should -Be 'alpha'
+            $PSSemVer.BuildMetadata | Should -Be '2020-01-01'
+        }
+        It "New-PSSemVer -Version '1.0.0-alpha' -PreRelease 'beta' -Build '2020-01-01'" {
+            { $PSSemVer = New-PSSemVer -Version '1.0.0-alpha' -PreRelease 'beta' -Build '2020-01-01' } | Should -Throw 'Incompatible parameter values'
+        }
     }
 
     Describe 'Function: ConvertTo-PSSemVer' {

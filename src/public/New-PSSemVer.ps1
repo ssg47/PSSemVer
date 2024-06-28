@@ -48,15 +48,22 @@
 
         # The prerelease version.
         [Parameter(ParameterSetName = 'Values')]
+        [Parameter(
+            Mandatory,
+            ParameterSetName = 'Mixed')]
         [Alias('PreReleaseLabel')]
         [string] $Prerelease = '',
 
         # The build metadata.
         [Parameter(ParameterSetName = 'Values')]
+        [Parameter(ParameterSetName = 'Mixed')]
         [Alias('Build', 'BuildLabel')]
         [string] $BuildMetadata = '',
 
         # The version as a string.
+        [Parameter(
+            Mandatory,
+            ParameterSetName = 'Mixed')]
         [Parameter(
             Mandatory,
             ParameterSetName = 'String'
@@ -68,6 +75,14 @@
     switch ($PSCmdlet.ParameterSetName) {
         'Values' {
             return [PSSemVer]::New($Major, $Minor, $Patch, $Prerelease, $BuildMetadata)
+        }
+        'Mixed' {
+            $temp = [PSSemVer]::New($Version)
+            if ([String]::Empty -ne $temp.Prerelease -and $null -ne $Prerelease)
+            {
+                throw "Incompatible parameter values"
+            }
+            return [PSSemVer]::New($temp.Major, $temp.Minor, $temp.Patch, $Prerelease, $BuildMetadata)
         }
         'String' {
             if ([string]::IsNullOrEmpty($Version)) {
